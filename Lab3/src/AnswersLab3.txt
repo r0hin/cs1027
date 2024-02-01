@@ -1,0 +1,59 @@
+Answers for Lab 2
+-----------------------------------------------
+
+
+
+EXERCISE 1
+
+1. Should instance variable interestRate be declared as static? Explain.
+
+No- instance variables are specific to each object.
+
+2. Write the output from the test harness for class SavingsAccount. 
+
+SavingsAccount: balance $115.0, interest rate 0.15
+
+
+EXERCISE 2
+
+3. Which method(s) of the class CheckingAccount demonstrate overriding? Which methods demonstrate overloading?
+
+The methods deposit and withdraw demonstrate overloading. The method toString demonstrates overriding.
+
+4. Is bacc0 = chacc1 legal? Why?
+
+Yes, because checking account is a subclass of bank account. So it can be assigned to a bank account variable.
+
+5. Is chacc1 = bacc1 legal? Why?
+
+No, because a bank account is not a (subclass of) checking account. So it cant be assigned to a checking account variable.
+
+6. On which variables bacc1, chacc1, sacc1 was the invocation to method deductFees() valid? Explain.
+Only chacc1, because it is the only one that has the method defined in its class.
+
+7. Which compilation error(s) could be fixed through casting? Which one(s) could not be fixed? Why?
+((CheckingAccount)bacc1).deductFees(); would fix the error because bank account can be cast to checking account.
+However, ((CheckingAccount)sacc1).deductFees() does not because checking account is not a subclass of savings account.
+
+8. Why did the program crash? What kind of exception was thrown?
+ClassCastException: class BankAccount cannot be cast to class CheckingAccount
+
+
+9. What was the runtime error obtained when changing super.deposit(amount)
+to deposit(amount) in class CheckingAccount.java? 
+
+Infinite loop because it calls itself instead of the superclass method.
+
+EXERCISE 3
+
+10. Why does the compiler issue an error message when invoking newAcc.getTransactionCount()? Why does the compiler issue an error message when invoking newAcc.getInterestRate()?
+
+These methods do not exist on the bank account class
+
+11. Can you tell whether in the statement String accountInfo = newAcc.toString(); the
+method toString() being invoked is from the class CheckingAccount or from the class
+SavingsAccount? Explain your answer.
+
+You cant tell because the user decides which class to use by inputting s or c.
+
+But you can tell programmatically by using the instanceof operator and testing the result.
