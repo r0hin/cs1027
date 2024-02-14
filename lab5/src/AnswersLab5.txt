@@ -1,0 +1,49 @@
+Answers for Lab 5
+-----------------------------------------------
+
+
+EXERCISE 1
+
+1. Write your predictions of the output from each of the 3 cases:
+
+Case i): Index out of bounds (D)
+Case ii): no var x in P (E)
+Case iii): C
+
+
+2. Were you correct in your predictions above?
+Yes, not including the AB at the start and FG at the end.
+
+
+3. Write your predictions of the output from each of the 3 cases:
+
+Case i): XC
+Case ii): E
+Case iii): C
+
+
+
+4. Were you correct in your predictions above?
+Yes, not including the AB at the start and FG at the end.
+
+
+EXERCISE 2
+
+
+5. When i begins at 20, why are we not seeing 20 nodes printed out? How many nodes are in the linked list?
+Still only 10. Because the printlist function uses loop with 10.
+
+
+6. When i begins at 5, why does the program crash after printing out the number 5? How many nodes are in the linked list? What kind of exception is thrown here?
+Upon the 6th iteration current is null and no method getElement(). NullPointerException is thrown.
+
+
+EXERCISE 3
+
+
+7. What are the 4 possible cases we need to consider? What would curr be equal to (or NOT equal to) in each of these 4 cases?
+
+FRONT OF LIST: curr = front
+BACK OF LIST: curr = back
+MIDDLE OF LIST: curr not equal to front or back
+NOT IN LIST: loop thru list, no match, curr = null
