@@ -1,0 +1,32 @@
+Answers for Lab 6
+-----------------------------------------------
+
+
+EXERCISE 1
+
+1. How many swaps must be made to correctly reverse the array?
+
+n/2
+
+
+2. Does the code need to change for an array of odd length vs an array of even length? Write your answers in AnswersLab6.txt.
+
+No, the middle element will be swapped with itself, so it will not change the array.
+
+
+EXERCISE 2
+
+3. In expandCapacity(), why does the loop start at 1 instead of 0? Does this matter?
+
+The 0th element is null always, so we dont want to duplicate this.
+
+
+EXERCISE 3
+
+4. Does the order of the two pops matter? What if we swapped the order of op1 and op2? In which cases would this change the output and in which cases would it not change the output?
+
+Yes it matters, pop removes the top element of the stack, so if we swap the order of the pops, we will get the wrong result.
+
+5. Once the loop is finished, how do you obtain the result from the stack?
+
+The result is scoped outside the loop so we just returned it.
