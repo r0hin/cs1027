@@ -50,51 +50,36 @@ public class FrogPath {
       }
     }
 
-    // If current cell is a lilypad cell, look at the cells two away from the current cell and determine their priorities
-    if (currCell.isLilyPadCell()) {
-      for (int i = 0; i < 6; i++) {
-        Hexagon next = currCell.getNeighbour(i);
-        if (next != null && !next.isMarked() && !next.isAlligator() ) {
-          for (int j = 0; j < 6; j++) {
-            Hexagon next2 = next.getNeighbour(j);
-            if (next2 != null && !next2.isMarked() && !next2.isAlligator() ) {
-              // Calculate priority
-              // 0.0 3 flies
-              // 1.0 2 flies
-              // 2.0 1 fly
-              // 3.0 End (Franny)
-              // 4.0 Lilypad
-              // 5.0 Reeds
-              // 6.0 Water
-              // 10.0 Reeds near alligator
-              // +0.5 Cell 2 away in a straight line
-              // +1.0 Cell 2 away not in a straight line
-
-              double priority = 0.0;
-              if (next2.isEnd()) {
-                priority = 3.0;
-              } else if (next2.isLilyPadCell()) {
-                priority = 4.0;
-              } else if (next2.isReedsCell()) {
-                priority = 5.0;
-              } else if (next2.isWaterCell()) {
-                priority = 6.0;
-              } else if (next2 instanceof FoodHexagon) {
-                priority = 3.0 - ((FoodHexagon) next2).getNumFlies();
-              }
-
-              pq.add(next2, priority + 1.0);
-            }
-          }
-        }
-      }
-    }
-
     // Return the cell with the lowest priority
     return pq.peek();
   }
 
   public String findPath() {
-    return "";
+    // Create a Stack using the provided ArrayStack class to keep track of the cells that the frog has visited in its path from the starting cell toward the end cell. Remember that the cells are represented with objects of the class Hexagon. See the Path Algorithm section belo
+    
+    ArrayStack<Hexagon> stack = new ArrayStack<Hexagon>();
+    stack.push(pond.getStart());
+
+    // o You also need to build a String containing the cell ID's (call getID() or toString() method on the Hexagon objects to get a the ID of a cell) of EVERY cell Freddy visits along his path
+    
+    String path = "";
+    while (!stack.isEmpty()) {
+      Hexagon currCell = stack.peek();
+      if (currCell.isEnd()) {
+        break;
+      }
+      Hexagon nextCell = findBest(currCell);
+      if (nextCell == null) {
+        stack.pop();
+      } else {
+        stack.push(nextCell);
+      }
+    }
+
+    while (!stack.isEmpty()) {
+      path += stack.pop().getID() + " ";
+    }
+
+    return path;
   }
 }
