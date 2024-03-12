@@ -1,0 +1,36 @@
+Answers for Lab 8
+-----------------------------------------------
+
+
+EXERCISE 1
+
+1. What values are expected for sortBy? What does each one stand for / represent?
+Possible values are 'n' or 'e' or 'c'
+n - sort by name
+e - sort by email
+c - sort by cell phone number
+
+2. What should the while loop condition be so that it continues to prompt the user for input until they enter 'n', 'e', or 'c'. Should this conditional include && (and) or || (or) operators? 
+while (sortBy == 'n' || sortBy == 'e' || sortBy == 'c')
+
+
+3. How many different approaches to printing out the contact list can you think of? Which one requires the least amount of code to be added?
+- Using a for loop
+- Using a for-each loop
+- Using an iterator
+
+
+
+4. How are the contacts sorted when you multiply -1 by the result in the compareByName() method? Why is this happening?
+Reverse order. Because -1 is multiplied by the result of the comparison, the result (eg. a > b meaning true) is reversed.
+
+
+
+EXERCISE 2
+
+5. How do we know that we can call iterator() on each of the 5 collections from the array? Why does this not cause a compiler error?
+Because all of the collections implement the Collection interface, which has the iterator() method. polymorphism
+
+
+6. Can you tell how each of the collections was implemented? (i.e. were they implemented with arrays, linked lists, or other underlying data structures?) How can we loop through the values without knowledge of their implementation?
+The collection is abstracted away from the implementation. We can loop through the values using the iterator() method, which is implemented by each of the collections.
