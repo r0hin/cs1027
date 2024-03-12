@@ -21,6 +21,8 @@ public class TestPath {
 		try {
 			FrogPath prog = new FrogPath("pond" + num + ".txt");
 			String res = prog.findPath();
+			System.out.println(res);
+			System.out.println(expOutputs[num-1]);
 
 			if (res.equals(expOutputs[num-1])) {
 				System.out.println("TestPath - Test " + num + " Passed");
@@ -31,6 +33,7 @@ public class TestPath {
 			}
 		
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			System.out.println("TestPath - Test " + num + " Failed (exception)");
 			if (debugging) JOptionPane.showMessageDialog(null,"TestPath - Test " + num + " Failed (exception)");
 		}
@@ -44,6 +47,7 @@ public class TestPath {
 		for (int i = 1; i <= 9; i++) {
 			runTest(i);
 		}
+		// runTest(1);
 		
 	}
 

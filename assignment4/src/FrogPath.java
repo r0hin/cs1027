@@ -12,26 +12,43 @@ public class FrogPath {
   }
 
   public Hexagon findBest(Hexagon currCell) {
-    // To determine the next best cell for Freddy, we will assign priorities to the cells based on their location and type. So, you must first search through the six (or fewer) cells adjacent to the current cell and determine their priorities as explained below. Then, if the current cell is a lilypad cell, look at the cells two away from the current cell and determine their priorities. While examining the neighbouring cells around a cell, you must start at index 0 and continue clockwise up to index 5.
-    // As you examine each cell in the order explained and illustrated above, you must determine the priority of the cell based on its type (water, reeds, lilypad, etc.) as well as where it is located relative to the current cell (adjacent, two away in a straight line, or two away not in a straight line). However, when Freddy visits a cell, the cell will be marked and when looking for the cell with lowest priority the cells that have been already marked will not be considered.
-    
     // Create priority queue
     ArrayUniquePriorityQueue<Hexagon> pq = new ArrayUniquePriorityQueue<Hexagon>();
     // Ad all reachable cells to the priority queue
+
+    // 0.0 3 flies
+    // 1.0 2 flies
+    // 2.0 1 fly
+    // 3.0 End (Franny)
+    // 4.0 Lilypad
+    // 5.0 Reeds
+    // 6.0 Water
+    // 10.0 Reeds near alligator
+    // +0.5 Cell 2 away in a straight line
+    // +1.0 Cell 2 away not in a straight line
+
     for (int i = 0; i < 6; i++) {
       Hexagon next = currCell.getNeighbour(i);
-      if (next != null && !next.isMarked() && !next.isAlligator() ) {
+
+      if (next == null) {
+        continue;
+      }
+
+      if (!next.isMarked() && !next.isAlligator() && !next.isMudCell() ) {
         // Calculate priority
-        // 0.0 3 flies
-        // 1.0 2 flies
-        // 2.0 1 fly
-        // 3.0 End (Franny)
-        // 4.0 Lilypad
-        // 5.0 Reeds
-        // 6.0 Water
-        // 10.0 Reeds near alligator
-        // +0.5 Cell 2 away in a straight line
-        // +1.0 Cell 2 away not in a straight line
+
+        // Check if alligator is adjacent
+        boolean alligatorNear = false;
+        for (int j = 0; j < 6; j++) {
+          Hexagon alligator = next.getNeighbour(j);
+          if (alligator != null && alligator.isAlligator()) {
+            alligatorNear = true;
+            break;
+          }
+        }
+        if (alligatorNear) {
+          continue; // Skip this cell
+        }
 
         double priority = 0.0;
         if (next.isEnd()) {
@@ -50,36 +67,99 @@ public class FrogPath {
       }
     }
 
+    if (currCell.isLilyPadCell() || currCell.isEnd() || currCell.isStart()){
+      // Can jump to any cell 2 away, if in a straight line add 0.5 to priority else add 1.0
+      for (int i = 0; i < 6; i++) {
+        Hexagon next = currCell.getNeighbour(i);
+        if (next != null) {
+          for (int j = 0; j < 6; j++) {
+            Hexagon next2 = next.getNeighbour(j);
+
+            if (next2 == null) {
+              continue;
+            }
+
+            // Check if alligator is adjacent
+            boolean alligatorNear = false;
+            for (int k = 0; k < 6; k++) {
+              Hexagon alligator = next2.getNeighbour(k);
+              if (alligator != null && alligator.isAlligator()) {
+                alligatorNear = true;
+                break;
+              }
+            }
+            if (alligatorNear) {
+              continue; // Skip this cell
+            }
+
+            if (!next2.isMarked() && !next2.isAlligator() && !next2.isMudCell()) {
+              double priority = 0.0;
+              if (next2.isEnd()) {
+                priority = 3.0;
+              } else if (next2.isLilyPadCell()) {
+                priority = 4.0;
+              } else if (next2.isReedsCell()) {
+                priority = 5.0;
+              } else if (next2.isWaterCell()) {
+                priority = 6.0;
+              } else if (next2 instanceof FoodHexagon) {
+                priority = 3.0 - ((FoodHexagon) next2).getNumFlies();
+              }
+              if (i == j) {
+                priority += 0.5;
+              } else {
+                priority += 1.0;
+              }
+              pq.add(next2, priority);
+            }
+          }
+        }
+      }
+    }
+
     // Return the cell with the lowest priority
+    if (pq.isEmpty()) {
+      return null;
+    }
     return pq.peek();
   }
 
   public String findPath() {
-    // Create a Stack using the provided ArrayStack class to keep track of the cells that the frog has visited in its path from the starting cell toward the end cell. Remember that the cells are represented with objects of the class Hexagon. See the Path Algorithm section belo
-    
     ArrayStack<Hexagon> stack = new ArrayStack<Hexagon>();
     stack.push(pond.getStart());
+    pond.getStart().markInStack();
+    int fliesEaten = 0;
 
-    // o You also need to build a String containing the cell ID's (call getID() or toString() method on the Hexagon objects to get a the ID of a cell) of EVERY cell Freddy visits along his path
+    String s = "";
     
-    String path = "";
     while (!stack.isEmpty()) {
-      Hexagon currCell = stack.peek();
-      if (currCell.isEnd()) {
+      Hexagon curr = stack.peek();
+      s += curr.getID() + " ";
+      if (curr.isEnd()) {
         break;
       }
-      Hexagon nextCell = findBest(currCell);
-      if (nextCell == null) {
+      if (curr instanceof FoodHexagon) {
+        fliesEaten += ((FoodHexagon) curr).getNumFlies();
+        ((FoodHexagon)curr).removeFlies();
+      }
+
+      Hexagon next = findBest(curr);
+      if (next == null) {
         stack.pop();
+        curr.markOutStack();
       } else {
-        stack.push(nextCell);
+        stack.push(next);
+        next.markInStack();
       }
     }
 
-    while (!stack.isEmpty()) {
-      path += stack.pop().getID() + " ";
+    if (stack.isEmpty()) {
+      s = "No solution";
+    }
+    else {
+      s += "ate " + fliesEaten + " flies";
     }
 
-    return path;
+    return s;
   }
 }
