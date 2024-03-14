@@ -3,6 +3,7 @@ import java.io.IOException;
 public class FrogPath {
   private Pond pond;
 
+  // Constructor
   public FrogPath(String filename) {
     try {
       pond = new Pond(filename);
@@ -12,33 +13,19 @@ public class FrogPath {
   }
 
   public Hexagon findBest(Hexagon currCell) {
-    // Create priority queue
-    ArrayUniquePriorityQueue<Hexagon> pq = new ArrayUniquePriorityQueue<Hexagon>();
-    // Ad all reachable cells to the priority queue
+    ArrayUniquePriorityQueue<Hexagon> pq = new ArrayUniquePriorityQueue<Hexagon>(); // Priority queue
+    // Add all reachable cells to the priority queue
 
-    // 0.0 3 flies
-    // 1.0 2 flies
-    // 2.0 1 fly
-    // 3.0 End (Franny)
-    // 4.0 Lilypad
-    // 5.0 Reeds
-    // 6.0 Water
-    // 10.0 Reeds near alligator
-    // +0.5 Cell 2 away in a straight line
-    // +1.0 Cell 2 away not in a straight line
-
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++) { // Add all reachable cells to the priority queue
       Hexagon next = currCell.getNeighbour(i);
 
       if (next == null) {
-        continue;
+        continue; // Skip this cell
       }
 
+      // Cell is not marked, alligator, or mud
       if (!next.isMarked() && !next.isAlligator() && !next.isMudCell() ) {
-        // Calculate priority
-
-        // Check if alligator is adjacent
-        boolean alligatorNear = false;
+        boolean alligatorNear = false; // Check if alligator is adjacent
         for (int j = 0; j < 6; j++) {
           Hexagon alligator = next.getNeighbour(j);
           if (alligator != null && alligator.isAlligator()) {
@@ -46,41 +33,44 @@ public class FrogPath {
             break;
           }
         }
-        if (alligatorNear) {
-          continue; // Skip this cell
+        if (alligatorNear && !next.isReedsCell()) {
+          continue; // Skip this cell, cant go to it unless it is a reed cell
         }
 
         double priority = 0.0;
-        if (next.isEnd()) {
-          priority = 3.0;
-        } else if (next.isLilyPadCell()) {
+        if (next.isEnd()) { // end cell, 3
+          priority = 3.0; 
+        } else if (next.isLilyPadCell()) { // lily pad cell, 4
           priority = 4.0;
-        } else if (next.isReedsCell()) {
+        } else if (next.isReedsCell() && alligatorNear) { // reed cell + alligator, 10
+          priority = 10.0;
+        } else if (next.isReedsCell()) { // reed cell, 5
           priority = 5.0;
-        } else if (next.isWaterCell()) {
+        } else if (next.isWaterCell()) { // water cell, 6
           priority = 6.0;
-        } else if (next instanceof FoodHexagon) {
+        } else if (next instanceof FoodHexagon) { // food cell, 3 - numFlies. Ex. 1 fly is is 3-1 = 2
           priority = 3.0 - ((FoodHexagon) next).getNumFlies();
         }
 
+        // Add to priority queue
         pq.add(next, priority);
       }
     }
 
+    // If current cell is a lily pad cell, end cell, or start cell, it can jump to any cell 2 away
     if (currCell.isLilyPadCell() || currCell.isEnd() || currCell.isStart()){
-      // Can jump to any cell 2 away, if in a straight line add 0.5 to priority else add 1.0
       for (int i = 0; i < 6; i++) {
         Hexagon next = currCell.getNeighbour(i);
-        if (next != null) {
+        if (next != null) { // For each neigbour of current, cell, get their neighbours
+          // There will be some duplicate cells, but the priority queue will handle that (wont get added same cell)
           for (int j = 0; j < 6; j++) {
             Hexagon next2 = next.getNeighbour(j);
 
             if (next2 == null) {
-              continue;
+              continue; // Skip this cell, doesn't exist
             }
 
-            // Check if alligator is adjacent
-            boolean alligatorNear = false;
+            boolean alligatorNear = false; // Check if alligator is adjacent
             for (int k = 0; k < 6; k++) {
               Hexagon alligator = next2.getNeighbour(k);
               if (alligator != null && alligator.isAlligator()) {
@@ -88,27 +78,31 @@ public class FrogPath {
                 break;
               }
             }
-            if (alligatorNear) {
+            if (alligatorNear && !next2.isReedsCell()) { // alligator is near and not a reed cell
               continue; // Skip this cell
             }
 
+            // Cell is not marked, alligator, or mud
             if (!next2.isMarked() && !next2.isAlligator() && !next2.isMudCell()) {
               double priority = 0.0;
-              if (next2.isEnd()) {
+              if (next2.isEnd()) { // end cell, 3
                 priority = 3.0;
-              } else if (next2.isLilyPadCell()) {
+              } else if (next2.isLilyPadCell()) { // lily pad cell, 4
                 priority = 4.0;
-              } else if (next2.isReedsCell()) {
+              } else if (next2.isReedsCell() && alligatorNear) { // reed cell + alligator, 10
+                priority = 10.0;
+              } else if (next2.isReedsCell()) { // reed cell, 5
                 priority = 5.0;
-              } else if (next2.isWaterCell()) {
+              } else if (next2.isWaterCell()) { // water cell, 6
                 priority = 6.0;
-              } else if (next2 instanceof FoodHexagon) {
+              } else if (next2 instanceof FoodHexagon) { // food cell, 3 - numFlies. Ex. 1 fly is is 3-1 = 2
                 priority = 3.0 - ((FoodHexagon) next2).getNumFlies();
               }
-              if (i == j) {
+
+              if (i == j) { // Straight line, add 0.5 to priority
                 priority += 0.5;
               } else {
-                priority += 1.0;
+                priority += 1.0; // Not straight line, add 1 to priority
               }
               pq.add(next2, priority);
             }
@@ -117,42 +111,49 @@ public class FrogPath {
       }
     }
 
-    // Return the cell with the lowest priority
     if (pq.isEmpty()) {
       return null;
     }
+
+    // Return the cell with the lowest priority
     return pq.peek();
   }
 
+  // Evaluate the entire path
   public String findPath() {
+    // Create a stack to store the path
     ArrayStack<Hexagon> stack = new ArrayStack<Hexagon>();
     stack.push(pond.getStart());
     pond.getStart().markInStack();
-    int fliesEaten = 0;
 
+    // Create a string to store the path and the number of flies eaten
+    int fliesEaten = 0;
     String s = "";
     
-    while (!stack.isEmpty()) {
+    while (!stack.isEmpty()) { // While the stack is not empty
       Hexagon curr = stack.peek();
       s += curr.getID() + " ";
       if (curr.isEnd()) {
-        break;
+        break; // End cell reached
       }
-      if (curr instanceof FoodHexagon) {
+
+      if (curr instanceof FoodHexagon) { // If the current cell is a food cell, eat the flies
         fliesEaten += ((FoodHexagon) curr).getNumFlies();
         ((FoodHexagon)curr).removeFlies();
       }
 
-      Hexagon next = findBest(curr);
-      if (next == null) {
+      Hexagon next = findBest(curr); // Find the best cell to jump to
+
+      if (next == null) { // If there is no cell to jump to, pop the stack
         stack.pop();
         curr.markOutStack();
-      } else {
+      } else { // If there is a cell to jump to, push it onto the stack
         stack.push(next);
         next.markInStack();
       }
     }
 
+    // If the stack is empty, there is no solution
     if (stack.isEmpty()) {
       s = "No solution";
     }
