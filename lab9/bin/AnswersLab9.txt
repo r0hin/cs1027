@@ -1,0 +1,57 @@
+Answers for Lab 9
+-----------------------------------------------
+
+EXERCISE 1
+
+1. Answer the following questions about the Fibonacci and Factorial programs:
+
+a) Why do the iterative methods (ifib and ifact) require so many variables?
+You need to keep track of the current value of the factorial or fibonacci number, the previous value, and the next value.
+
+b) How do the recursive methods (rfib and rfact) work without so many variables?
+The recursive methods use the call stack to keep track of the current value of the factorial or fibonacci number, the previous value, and the next value.
+
+c) What are the base cases of the recursive methods (rfib and rfact)?
+The base case for rfib is when n is 1 or 2. The base case for rfact is when n is 1.
+
+
+
+2. Write down the running time printed out to the console for each of the following inputs:
+
+Factorial(15): 1
+Factorial(25): 16
+Factorial(35): 17
+Factorial(45): 24
+
+Fibonacci(15): 0
+Fibonacci(25): 2
+Fibonacci(35): 40
+Fibonacci(45): 3148
+
+3. What patterns do you notice with the running times of each program with different input numbers?
+It tends to increase with higher numbers.
+
+4. What is the value of methodCalls2 (calls to rfib(2)) when n=45?
+The value is 2269806339.
+
+5. Why is the recursive algorithm for computing Fibonacci numbers so slow compared to the iterative algorithm? Does the value of methodCalls2 make sense with this rationale?
+The recursive algorithm is slow because it makes many redundant calls to the same function. 
+The value of methodCalls2 makes sense because it is the number of calls to the function rfib(2) when n=45.
+A dictionary is used to store the values of the function calls, so the number of calls is reduced to 2.
+
+
+EXERCISE 3
+
+6. How many activation records are there in the execution stack?
+2: param1: 1, local1: 1
+
+
+7. Write the values of 
+param1 (in m1) = 1
+local1 (in m1) = 1
+i (in the upper m3) = 1
+i (in the lower m3) = 0
+value (in the lower m3) = 5
+
+8. How did the execution stack change after you pressed F6 twice?
+Theres only 1 activation record: param2: 1.txt
