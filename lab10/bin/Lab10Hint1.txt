@@ -1,0 +1,44 @@
+Hint 1 (size method)
+
+Small hint: 
+
+We can do a postorder traversal of the tree. This will allow us to count the number of nodes in the tree from the bottom up. For example, the size of a leaf nodes children (empty trees) are 0, the size of the subtree rooted at a leaf node is 1, etc. What is the size of the subtree rooted at that leaf node's parent?
+
+Since this is a recursive method, we will need a base case and a recursive part.
+    What is the base case? (When a subtree is empty. But how do we check for this?)
+    What is the recursive part? (When the tree is not empty)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Big hint:
+
+
+
+Algorithm
+    If the tree is empty, return a size of 0
+    If the tree is not empty
+        Get the size of the left subtree (recursive call)
+        Get the size of the right subtree (recursive call)
+        Return the size of myself + my left subtree + my right subtree

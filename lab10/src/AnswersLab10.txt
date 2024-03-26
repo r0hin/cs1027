@@ -1,0 +1,57 @@
+Answers for Lab 10
+-----------------------------------------------
+
+EXERCISE 1
+
+1. What should the return type be in each of the following methods?
+
+getData() --> T
+getLeft() --> BinaryTreeNode<T>
+getRight() --> BinaryTreeNode<T>
+
+
+
+2. What should the parameter type be in each of the following methods?
+
+setData() --> void
+setLeft() --> void
+setRight() --> void
+
+
+
+3. What would need to be added/removed/changed to make this class work for a more general tree such that each node could have more than 2 nodes?
+
+Instead of left and right variables, you make an array that represents nodes from left to right such that unlimited nodes could be stored.
+
+
+EXERCISE 2
+
+4. What is the base case of the size(r) method? What are the recursive cases?
+
+The base case is when the node is null, in which case the size is 0.
+The recursive cases are when the node is not null, in which case the size is 1 plus the size of the left and right subtrees.
+
+
+5. What is the main difference between the 3 methods: inorder(), preorder(), and postorder()? What is the "visit" action being done in the implementations of these traversals?
+
+Inorder: left subtree, visit node, right subtree
+Preorder: visit node, left subtree, right subtree
+Postorder: left subtree, right subtree, visit node
+
+
+6. In the recFormatTree() method, what is the space parameter used for? What is the default value when this method is first called? What is being concatenated to this space value in the recursive calls? Does this make sense for how the tree is being displayed?
+
+String s = recFormatTree(node.getRight(), space+"\t");
+s += space+node.getData()+"\n";
+s += recFormatTree(node.getLeft(), space+"\t");
+return s;
+
+The space parameter is used to add tabs to the left of the node data to make the tree look more like a tree. 
+The default value is an empty string. The space value is being concatenated to the tab character in the recursive calls. 
+This makes sense because the space value is being added to the left of the node data, which makes the tree look more like a tree.
+
+
+EXERCISE 3
+
+7. How can you tell if a given node is a leaf node?
+If the left and right nodes are null, then the node is a leaf node.

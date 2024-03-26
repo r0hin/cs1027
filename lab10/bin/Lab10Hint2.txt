@@ -1,0 +1,8 @@
+Hint 2 (contains method)
+
+Algorithm
+    If the tree is empty, return false
+    If the tree is not empty
+        If the current node is the target, return true
+        Check the leftsubtree (recursive call), propagate true
+        Check the rightsubtree (recursive call), propagate result
