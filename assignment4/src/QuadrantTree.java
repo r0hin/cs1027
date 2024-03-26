@@ -8,7 +8,8 @@ public class QuadrantTree {
 
   private QTreeNode buildTree(int[][] pixels, int x, int y, int size) {
     if (size == 1) {
-      return new QTreeNode(null, x, y, size, pixels[x][y]);
+      // Color but its x left and y down
+      return new QTreeNode(null, x, y, size, pixels[y][x]);
     }
 
     QTreeNode[] children = new QTreeNode[4];
@@ -34,66 +35,67 @@ public class QuadrantTree {
   public ListNode<QTreeNode> getPixels(QTreeNode r, int theLevel) {
     // Recursively get the pixels on the given level
     ListNode<QTreeNode> theList = new ListNode<QTreeNode>(null);
-    getPixelsHelper(r, theLevel, 0, theList);
+    getPixelsHelper(r, 0, theLevel, theList);
     return theList.getNext();
   }
 
-  private void getPixelsHelper(QTreeNode r, int theLevel, int currentLevel, ListNode<QTreeNode> theList) {
+  // Level 1 should return 4 nodes, go down the levels and if its the same, set next on the list otherwise dont add it
+  private void getPixelsHelper(QTreeNode r, int theLevel, int targetLevel, ListNode<QTreeNode> theList) {
     if (r == null) {
-      return;
     }
-
-    if (currentLevel == theLevel) {
-      theList.setNext(new ListNode<QTreeNode>(r));
-    } else {
-      for (int i = 0; i < 4; i++) {
-        getPixelsHelper(r.getChild(i), theLevel, currentLevel + 1, theList);
+    else if (theLevel == targetLevel) {
+      // ListNode<QTreeNode> theList = new ListNode<QTreeNode>(r);
+      // return theList;
+      ListNode<QTreeNode> latestItem = theList;
+      while (latestItem.getNext() != null) {
+        latestItem = latestItem.getNext();
       }
+      latestItem.setNext(new ListNode<QTreeNode>(r));
+    }
+    else {
+      getPixelsHelper(r.getChild(0), theLevel+1, targetLevel, theList);
+      getPixelsHelper(r.getChild(1), theLevel+1, targetLevel, theList);
+      getPixelsHelper(r.getChild(2), theLevel+1, targetLevel, theList);
+      getPixelsHelper(r.getChild(3), theLevel+1, targetLevel, theList);
     }
   }
 
   public Duple findMatching(QTreeNode r, int theColor, int theLevel) {
-    // Traversal of the tree: If r is a leaf or theLevel = 0 then (i) if the color of r is similar to theColor return a Duple object storing a list containing r and the value 1; (ii) what value do you return if the color of r is not similar to theColor? If r is not a leaf or theLevel > 0 then perform recursive calls on the children of r concatenating the lists inside the Duple objects that these calls return (what are the values of the parameters in these calls?); return the final Duple object (what is the value of the instance variable count of this Duple object?).
-    return findMatchingHelper(r, theColor, theLevel);
-  }
-
-  private Duple findMatchingHelper(QTreeNode r, int theColor, int theLevel) {
-    if (r == null) {
-      return new Duple();
-    }
-
-    if (r.getSize() == 1 || theLevel == 0) {
-      if (r.getColor() == theColor) {
-        ListNode<QTreeNode> theList = new ListNode<QTreeNode>(r);
-        return new Duple(theList, 1);
-      } else {
-        return new Duple();
-      }
-    }
-
-    Duple[] children = new Duple[4];
-    for (int i = 0; i < 4; i++) {
-      children[i] = findMatchingHelper(r.getChild(i), theColor, theLevel - 1);
-    }
-
     ListNode<QTreeNode> theList = new ListNode<QTreeNode>(null);
-    int total = 0;
-    for (int i = 0; i < 4; i++) {
-      theList = concatenate(theList, children[i].getFront());
-      total += children[i].getCount();
+    
+    // Calculate total depth
+    int totalDepth = -1;
+    QTreeNode current = r;
+    while (current != null) {
+      totalDepth++;
+      current = current.getChild(0);
     }
 
-    return new Duple(theList, total);
+    findMatchingHelper(r, theColor, theLevel, theList, 0, totalDepth);
+    return new Duple(theList.getNext(), length(theList.getNext()));
   }
 
-  private ListNode<QTreeNode> concatenate(ListNode<QTreeNode> list1, ListNode<QTreeNode> list2) {
-    ListNode<QTreeNode> current = list1;
-    while (current.getNext() != null) {
-      current = current.getNext();
+  private void findMatchingHelper(QTreeNode r, int theColor, int theLevel, ListNode<QTreeNode> theList, int currentDepth, int totalDepth) {
+    // Traverse the tree and return a list.
+    if (r == null) {
     }
+    else {
+      // Comparisons
+      if (currentDepth == theLevel || (theLevel > totalDepth && currentDepth == totalDepth )) {
+        if (Gui.similarColor(r.getColor(), theColor)) {
+          ListNode<QTreeNode> latestItem = theList;
+          while (latestItem.getNext() != null) {
+            latestItem = latestItem.getNext();
+          }
+          latestItem.setNext(new ListNode<QTreeNode>(r));
+        }
+      }      
 
-    current.setNext(list2);
-    return list1;
+      findMatchingHelper(r.getChild(0), theColor, theLevel, theList, currentDepth + 1, totalDepth);
+      findMatchingHelper(r.getChild(1), theColor, theLevel, theList, currentDepth + 1, totalDepth);
+      findMatchingHelper(r.getChild(2), theColor, theLevel, theList, currentDepth + 1, totalDepth);
+      findMatchingHelper(r.getChild(3), theColor, theLevel, theList, currentDepth + 1, totalDepth);
+    }
   }
 
   public QTreeNode findNode(QTreeNode r, int theLevel, int x, int y) {
@@ -127,25 +129,43 @@ public class QuadrantTree {
     // 4 4 4 4
     // 2 8 1 1
     // 8 6 1 1
-    int[][] pixels = new int[][] {
-      {2, 2, 8, 8},
-      {4, 4, 4, 4},
-      {2, 8, 1, 1},
-      {8, 6, 1, 1}
-    };
+    // int[][] pixels = new int[][] {
+    //   {2, 2, 8, 8},
+    //   {4, 4, 4, 4},
+    //   {2, 8, 1, 1},
+    //   {8, 6, 1, 1}
+    // };
+
+    int[][] pixels = new int[32][32];
+		for (int i = 0; i < 32; ++i)
+			for (int j = 0; j < 32; ++j)
+				pixels[i][j] = i;
 
     QuadrantTree tree = new QuadrantTree(pixels);
     QTreeNode root = tree.getRoot();
-    ListNode<QTreeNode> pixels1 = tree.getPixels(root, 1);
 
-    // Print
-    ListNode<QTreeNode> current = pixels1;
-    while (current != null) {
-      QTreeNode node = current.getData();
-      System.out.println(node.getColor());
-      current = current.getNext();
-    }
+    ListNode<QTreeNode> pixels1 = tree.getPixels(root, 5);
+
+    int thelength = length(pixels1);
+    System.out.println(thelength);
+
+    // Print it out
+    // ListNode<QTreeNode> current = pixels1;
+    // while (current != null) {
+    //   System.out.println(current.getData().getColor());
+    //   current = current.getNext();
+    // }
+
   }
+  
+  private static int length(ListNode<QTreeNode> list) {
+		int c = 0;
+		while (list != null) {
+			++c;
+			list = list.getNext();
+		}
+		return c;
+	}
 }
 
 

@@ -57,7 +57,7 @@ public class QTreeNode {
     }
 
     if (children == null) {
-      return null;
+      return null;  
     }
 
     return children[index];
