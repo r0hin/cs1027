@@ -66,7 +66,7 @@ public class QTreeNode {
     }
 
     if (children == null) { // Check if the children array is null
-      return null;  
+      throw new QTreeException("Invalid index");
     }
 
     // Return the child at the given index

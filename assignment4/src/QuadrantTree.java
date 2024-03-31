@@ -67,12 +67,7 @@ public class QuadrantTree {
     ListNode<QTreeNode> theList = new ListNode<QTreeNode>(null);
     
     // Calculate total depth
-    int totalDepth = -1;
-    QTreeNode current = r;
-    while (current != null) {
-      totalDepth++;
-      current = current.getChild(0);
-    }
+    int totalDepth = height(r);
 
     // Recursively find the matching nodes
     findMatchingHelper(r, theColor, theLevel, theList, 0, totalDepth);
@@ -84,24 +79,23 @@ public class QuadrantTree {
 
   private void findMatchingHelper(QTreeNode r, int theColor, int theLevel, ListNode<QTreeNode> theList, int currentDepth, int totalDepth) {
     // Traverse the tree and return a list.
-    if (r == null) {
-      // Base case
-    }
-    else {
-      // Comparisons
-      if (currentDepth == theLevel || (theLevel > totalDepth && currentDepth == totalDepth )) {
-        // If the level is the same, add it to the list
-        if (Gui.similarColor(r.getColor(), theColor)) {
-          ListNode<QTreeNode> latestItem = theList;
-          // Get the last item
-          while (latestItem.getNext() != null) {
-            latestItem = latestItem.getNext();
-          }
-          latestItem.setNext(new ListNode<QTreeNode>(r));
-        }
-      }      
+    // Comparisons
 
-      // Recursively go down the tree
+    if (currentDepth == theLevel || (theLevel > totalDepth && currentDepth == totalDepth )) {
+      // If the level is the same, add it to the list
+      if (Gui.similarColor(r.getColor(), theColor)) {
+        ListNode<QTreeNode> latestItem = theList;
+        // Get the last item
+        while (latestItem.getNext() != null) {
+          latestItem = latestItem.getNext();
+        }
+        latestItem.setNext(new ListNode<QTreeNode>(r));
+      }
+    }      
+
+    // Recursively go down the tree
+    // This means itll go down to every child and not go further if its a leaf.
+    if (!r.isLeaf()) {
       findMatchingHelper(r.getChild(0), theColor, theLevel, theList, currentDepth + 1, totalDepth); // top left
       findMatchingHelper(r.getChild(1), theColor, theLevel, theList, currentDepth + 1, totalDepth); // top right
       findMatchingHelper(r.getChild(2), theColor, theLevel, theList, currentDepth + 1, totalDepth); // bottom left
@@ -114,20 +108,16 @@ public class QuadrantTree {
   }
 
   private QTreeNode findNodeHelper(QTreeNode r, int theLevel, int x, int y) {
-    if (r == null) {
-      return null; // base case
-    }
-
     // If the level is at 0, return the node
     if (r.contains(x, y) && theLevel == 0) {
       return r;
     }
 
     // Recursively go down the tree
-    for (int i = 0; i < 4; i++) {
-      QTreeNode result = findNodeHelper(r.getChild(i), theLevel - 1, x, y);
-      if (result != null) { // If the result is not null, return it
-        return result;
+    if (!r.isLeaf()) {
+      for (int i = 0; i < 4; i++) {
+        QTreeNode result = findNodeHelper(r.getChild(i), theLevel - 1, x, y);
+        if (result != null) return result;
       }
     }
 
@@ -144,5 +134,21 @@ public class QuadrantTree {
 			list = list.getNext();
 		}
 		return c;
+	}
+
+  // Helper function to get the height of the tree
+  // Provided by assingnment in the TestQuadrant.java file
+  private static int height(QTreeNode r) {
+		if (r == null) return 0;
+		else if (r.isLeaf()) return 0;
+		else {
+			int h = 0, mh;
+			mh = height(r.getChild(0));
+			for (int i = 1; i < 4; ++i) {
+				h = height(r.getChild(i));
+				if (h > mh) mh = h;
+			}
+			return h + 1;
+		}
 	}
 }
